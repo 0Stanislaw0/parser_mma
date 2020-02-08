@@ -1,3 +1,10 @@
+Site parser https://newsmma.net
+ 
+ ### Реализовано:
+ 1. parser_with_Postgresql0.py/Write to csv file and write to PostGresql
+ 2. parser_with_MongoDb.py/Write to csv file and write to MongoDb
+ 3. parser_OOP.py/Write to csv file and write to PostGresql. Implemented as OOP
+
 ### Installation
 1. Clone repository or download zip
 ```
