@@ -6,6 +6,8 @@ import psycopg2
 
 connect = psycopg2.connect("host=localhost dbname=postgres user=postgres password=123")  # Подключаемся к postgresql.
 cursor = connect.cursor()  # создаем курсор в этой бд
+
+
 '''            Создание таблицы
 cursor.execute("""
             CREATE TABLE posts(
@@ -18,6 +20,8 @@ cursor.execute("""
             
             """)
 connect.commit()'''
+
+
 useragents = open('useragents.txt').read().split('\n')
 
 headers = {'user-agent': choice(useragents),
@@ -31,18 +35,12 @@ def get_html(url, useragent=None, proxies=None):
     return r.text
 
 
-# def removeAfter(string, suffix): # функция удаления после знака
-#     return string[:string.index(suffix) + len(suffix)]
-#
-# mystrip = lambda string, suffix: string[:string.index(suffix) + len(suffix)] # лямбда функция удаления после знака
-
 def newsmma(headers):
     new_url = 'https://newsmma.net/news/?page1'  # сайт, которым парсим
     new = 'https://newsmma.net'
     news = []  # создаем список, куда будет записываться нужная нам информация
     urls = []  # записываем сюда url статей
     urls.append(new_url)
-
     session = requests.Session()  # создаем сессию
     request = session.get(new_url, headers=headers)  # имулируюем   открытие страницы в браузере
 
@@ -52,12 +50,13 @@ def newsmma(headers):
                   'lxml')  # результат ответа и встроенная функция которая, позволяет распарсить ответ
         try:
             pagination = soup.find_all('a', attrs={'class': 'swchItem'})  # ищем элементы,которые отвечают за навигацию
-            count = int(pagination[1].text)  # хватаем предпоследний элемент, т.к. последний элемент не число
+            count = int(pagination[-1].text)  # хватаем предпоследний элемент, т.к. последний элемент не число
             print(count)
         except:
-            print('error')
+            count = 1
+            print('Ошибка, не удалось считать количество страниц. count = 1')
 
-        for i in range(1, 10):  # пробегаем по всем страницам
+        for i in range(1, count):  # пробегаем по всем страницам
             url = f"https://newsmma.net/news/?page{i}"
             if url not in urls:  # и добавляем в список urls наши ссылки с необходимой нам информацией
                 urls.append(url)
@@ -91,7 +90,6 @@ def newsmma(headers):
             description = description.replace('\n', '')  # удаляем лишние пробелы
             news.append({
                 'text': text,
-                #    'path':path,
                 'encoded_img': encoded_img,
                 'href': href,
                 'description': description,
